@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-ui
+  labels:
+    app: ollama-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama-ui
+  template:
+    metadata:
+      labels:
+        app: ollama-ui
+    spec:
+      containers:
+        - name: ollama-ui
+          image: "ghcr.io/open-webui/open-webui:main"
+          env:
+            - name: WEBUI_AUTH
+              value: "false"
+            - name: OLLAMA_BASE_URL
+              value: "https://ollama.self.hosted.example.com"
+            - name: WEBUI_SECRET_KEY
+              value: "secret"
+            - name: ENABLE_OPENAI_API
+              value: "false"
+          volumeMounts:
+            - name: storage
+              mountPath: /app/backend/data
+          resources:
+            limits:
+              memory: "3Gi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: storage
+          emptyDir: {}
